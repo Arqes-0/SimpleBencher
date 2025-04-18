@@ -1,0 +1,2 @@
+# SimpleBencher
+Lightweight Hardware Benchmark
