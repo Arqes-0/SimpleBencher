@@ -53,8 +53,8 @@ When running the program, you’ll see output like this:
 
 ```
 Primes: 40000
-Score: 20.32
-Time: 2.135 Seconds
+Score: 13.92
+Time: 57.135 Seconds
 ```
 
 - **Primes**: The number of primes found.
