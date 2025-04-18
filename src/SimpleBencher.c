@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <time.h>
 #define encontrar 40000
+
 double calculated(clock_t start, clock_t end);
+
 int main() {
+  printf("\nStarting benchmark, this might take a while...\n");
   clock_t inicio, final;
   inicio = clock();
   for (int primos = 0; primos < encontrar;) {
