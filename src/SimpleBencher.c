@@ -1,4 +1,3 @@
-#include <bits/time.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +10,7 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int numbers = 2;
 int found = 0;
 
-void *CalculatePrimes() {
+void *CalculatePrimes(void *arg) {
   int foundCopy = 0;
   int numbersCopy = 0;
   while (foundCopy < primesToFind) {
@@ -38,6 +37,45 @@ void *CalculatePrimes() {
   return NULL;
 }
 
+void *infinitePrimes(void *arg) {
+  int foundCopy = 0;
+  int numbersCopy = 0;
+  while (1) {
+    pthread_mutex_lock(&mutex);
+    numbers++;
+    numbersCopy = numbers;
+    foundCopy = found;
+    pthread_mutex_unlock(&mutex);
+    int flagFound = 0;
+    for (int i = 2; i < numbersCopy; i++) {
+      if (numbersCopy % i == 0) {
+        flagFound = 1;
+        break;
+      }
+    }
+
+    if (flagFound == 0) {
+      pthread_mutex_lock(&mutex);
+      found++;
+
+      pthread_mutex_unlock(&mutex);
+    }
+  }
+  return NULL;
+}
+void stressTest() {
+  sleep(2);
+  printf("Starting stress test, its recommended to watch temperatures \n");
+
+  long nCores = sysconf(_SC_NPROCESSORS_ONLN);
+  pthread_t threads[nCores];
+  for (int i = 0; i < nCores; i++) {
+    pthread_create(&threads[i], NULL, infinitePrimes, NULL);
+  }
+  for (int i = 0; i < nCores; i++) {
+    pthread_join(threads[i], NULL);
+  }
+}
 void MultiCore() {
   sleep(2);
   printf("\nStarting benchmark, this might take a while...\n");
@@ -99,6 +137,7 @@ again:;
   printf("\n What test do you want to run?\n"
          "	(1) SingleCore\n"
          "	(2) Multicore\n"
+         "	(3) StressTest\n"
          "	(0) Exit\n\n\n"
          "Your Choice: ");
   scanf("%d", &UserChoice);
@@ -108,6 +147,9 @@ again:;
     break;
   case 2:
     MultiCore();
+    break;
+  case 3:
+    stressTest();
     break;
   case 0:
     return 0;
